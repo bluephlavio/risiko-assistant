@@ -2,9 +2,6 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "author": "Flavio Grandin",
-  "engines": {
-    "node": "8"
-  },
   "scripts": {
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
@@ -13,6 +10,8 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "actions-on-google": "2.2.0",
+    "dialogflow": "0.6.0",
     "dialogflow-fulfillment": "0.5.0",
     "firebase-admin": "~7.0.0",
     "firebase-functions": "^2.2.0"
