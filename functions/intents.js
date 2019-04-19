@@ -18,13 +18,13 @@ const diceRollAttack = agent => {
       name: 'attack',
       lifespan: 3,
       parameters: {
-        values: values
+        values
       }
     });
-    if (n == 1) {
+    if (n === 1) {
       agent.add(`Ho lanciato un dado ed è uscito ${values[0]}`);
     } else {
-      const list = values.slice(0, n - 1).join(', ') + ` e ${values[n - 1]}`;
+      const list = `${values.slice(0, n - 1).join(', ')} e ${values[n - 1]}`;
       agent.add(`Ho lanciato ${n} dadi ottenendo ${list}`);
     }
   } else {
@@ -37,10 +37,10 @@ const diceRollDefense = agent => {
   const { n } = agent.parameters;
   const values = Array.from(new Array(n).keys()).map(() => roll());
   values.sort().reverse();
-  if (n == 1) {
+  if (n === 1) {
     agent.add(`Ho lanciato un dado ed è uscito ${values[0]}`);
   } else if (n > 1 && n < 4) {
-    const list = values.slice(0, n - 1).join(', ') + ` e ${values[n - 1]}`;
+    const list = `${values.slice(0, n - 1).join(', ')} e ${values[n - 1]}`;
     agent.add(`Ho lanciato ${n} dadi ottenendo ${list}`);
   } else {
     agent.add(`Non è possibile lanciare ${n} dadi`);
