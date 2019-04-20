@@ -1,4 +1,5 @@
-const { rollDice, sort, spellNumbers, computeLosses, chance } = require('./helpers');
+const { rollDice, sort, spellNumbers, computeLosses } = require('./helpers');
+const { WarSimulator } = require('./simulators');
 
 const welcome = agent => {
   agent.add(`Non vedevo l'ora di giocare a Risiko!`);
@@ -47,10 +48,50 @@ const diceRollDefense = agent => {
 const chanceOfWinning = agent => {
   const { attack, defense } = agent.parameters;
   if (attack > 1 && defense > 0) {
-    const p = chance(attack, defense);
-    agent.add(`La probabilità di vittoria è del ${Math.floor(p * 100)}%.`);
+    const warSimulator = new WarSimulator(attack, defense);
+    const outcomes = warSimulator.simulate();
+    const attempts = outcomes.length;
+    const wins = outcomes.reduce((total, outcome) => {
+      const { winner } = outcome;
+      return winner === 'attack' ? total + 1 : total;
+    }, 0);
+    const chance = wins / attempts;
+    const meanSurvivors =
+      outcomes.reduce((total, outcome) => {
+        const { winner, attackTanks } = outcome;
+        return winner === 'attack' ? total + attackTanks : total;
+      }, 0) / wins;
+    agent.add(`
+              La probabilità di vittoria è del ${Math.floor(chance * 100)}%.
+              In caso di vittoria il numero medio di sopravvissuti è di ${Math.round(
+                meanSurvivors
+              )} cararmatini.
+              `);
   } else {
     agent.add(`Non è possibile effettuare questo attacco.`);
+  }
+};
+
+const playerChoiceComment = agent => {
+  const { attack, defense, name } = agent.parameters;
+  if (attack > 1 && defense > 0) {
+    const warSimulator = new WarSimulator(attack, defense);
+    const outcomes = warSimulator.simulate();
+    const attempts = outcomes.length;
+    const wins = outcomes.reduce((total, outcome) => {
+      const { winner } = outcome;
+      return winner === 'attack' ? total + 1 : total;
+    }, 0);
+    const chance = wins / attempts;
+    if (chance <= 0.33) {
+      agent.add(`${name || ''} è scemo.`);
+    } else if (chance > 0.33 && chance <= 0.66) {
+      agent.add(`${name || ''} è avventato.`);
+    } else {
+      agent.add(`${name || ''} è un buon giocatore.`);
+    }
+  } else {
+    agent.add(`Non sa giocare.`);
   }
 };
 
@@ -61,5 +102,6 @@ intentMap.set('Default Fallback Intent', fallback);
 intentMap.set('Dice Roll Attack', diceRollAttack);
 intentMap.set('Dice Roll Defense', diceRollDefense);
 intentMap.set('Chance of Winning', chanceOfWinning);
+intentMap.set('Player Choice Comment', playerChoiceComment);
 
 module.exports = intentMap;
