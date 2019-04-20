@@ -55,27 +55,6 @@ const canGoOn = (attackTanks, defenseTanks) => {
   return attackTanks > 1 && defenseTanks > 0;
 };
 
-const chance = (initialAttackTanks, initialDefenseTanks) => {
-  const attempts = 1000;
-  let wins = 0;
-  for (let i = 0; i < attempts; i += 1) {
-    let attackTanks = initialAttackTanks;
-    let defenseTanks = initialDefenseTanks;
-    while (canGoOn(attackTanks, defenseTanks)) {
-      const attackDiceRoll = rollDice(attackDiceByTanks(attackTanks));
-      const defenceDiceRoll = rollDice(defenseDiceByTanks(defenseTanks));
-      const losses = computeLosses(attackDiceRoll, defenceDiceRoll);
-      attackTanks -= losses[0];
-      defenseTanks -= losses[1];
-    }
-    if (defenseTanks === 0) {
-      wins += 1;
-    }
-  }
-  const p = wins / attempts;
-  return p;
-};
-
 module.exports = {
   rollOneDice,
   rollDice,
@@ -85,6 +64,5 @@ module.exports = {
   computeLosses,
   attackDiceByTanks,
   defenseDiceByTanks,
-  canGoOn,
-  chance
+  canGoOn
 };
